@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Exclude CHELSA climate data files
+CHELSA_data/
