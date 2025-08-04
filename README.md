@@ -2,6 +2,10 @@
 
 [![R](https://img.shields.io/badge/R-%3E%3D4.0-blue.svg)](https://www.r-project.org/)
 
+## Authors
+
+**Ariadna Garcia-Astillero** & **Nathan Jay Baker**
+
 ## Overview
 
 This R script downloads and processes **CHELSA V2 monthly temperature data** for specific geographic coordinates, designed specifically for **freshwater ecology research**. The script extracts temperature time series data (2000-2019) from high-resolution climate data to support ecological analyses such as temperature-body size relationships in aquatic invertebrates.
@@ -171,10 +175,6 @@ Contributions are welcome! Please feel free to:
 ## License
 
 This code is released under the MIT License and comes with **ABSOLUTELY NO WARRANTY**. It is intended to help the research community and is provided free of charge.
-
-## Author
-
-**Nathan Jay Baker**  & **Ariadna Garcia-Astillero**
 
 *This R code is free, intended to help the community, and comes with ABSOLUTELY NO WARRANTY.*
 
