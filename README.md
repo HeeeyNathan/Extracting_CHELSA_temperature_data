@@ -1,5 +1,8 @@
 # CHELSA Temperature Data Extraction for Freshwater Ecology
 
+[![R](https://img.shields.io/badge/R-%3E%3D4.0-blue.svg)](https://www.r-project.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Overview
 
 This R script downloads and processes **CHELSA V2 monthly temperature data** for specific geographic coordinates, designed specifically for **freshwater ecology research**. The script extracts temperature time series data (2000-2019) from high-resolution climate data to support ecological analyses such as temperature-body size relationships in aquatic invertebrates.
@@ -170,7 +173,7 @@ This code is released under the MIT License and comes with **ABSOLUTELY NO WARRA
 ## Author
 
 **Nathan Jay Baker**  & **Ariadna Garcia-Astillero**
-Freshwater Ecologist  
+
 *This R code is free, intended to help the community, and comes with ABSOLUTELY NO WARRANTY.*
 
 ---
