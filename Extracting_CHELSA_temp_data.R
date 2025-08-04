@@ -19,7 +19,7 @@ library(raster)
 # 1. DEFINE SAMPLING SITES
 # ==============================================================================
 
-# Your four sampling sites in Germany (coordiates in UTM)
+# Four sampling sites in Germany (coordiates in UTM / WGS84)
 sampling_sites <- data.frame(
   stream = c("Aubach", "Bieber", "Kinzig O3", "Kinzig W1"),
   site_code = c("Auba", "Bieb", "KiO3", "KiW1"),
@@ -41,8 +41,7 @@ file_paths <- readLines("envidatS3paths.txt")
 # Remove leading and trailing whitespace from each line
 file_paths_clean <- trimws(file_paths)
 
-# Filter for years 2000-2019 and temperature data using regex
-# Updated pattern to match your requested years (2000-2019)
+# Filter for years 2000-2019 and temperature data
 pattern <- "tas.*_(2000|200[1-9]|201[0-9])_"  # Matches 2000-2019 and contains 'tas'
 file_paths_filtered <- file_paths_clean[grepl(pattern, file_paths_clean)]
 
@@ -59,7 +58,7 @@ data_dir <- "CHELSA_data"
 downloaded_files <- c()
 failed_downloads <- c()
 download_errors <- 0
-max_allowed_errors <- 1  # Stop after 1 error
+max_allowed_errors <- 1  # Stop after 1 error, change to a higher number if needed
 
 for (i in 1:length(file_paths_final)) {
   path <- file_paths_final[i]
