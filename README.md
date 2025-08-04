@@ -174,7 +174,7 @@ Contributions are welcome! Please feel free to:
 
 ## License
 
-This code is released under the MIT License and comes with **ABSOLUTELY NO WARRANTY**. It is intended to help the research community and is provided free of charge.
+This code is intended to help the research community and is provided free of charge.
 
 *This R code is free, intended to help the community, and comes with ABSOLUTELY NO WARRANTY.*
 
@@ -189,4 +189,4 @@ This code is released under the MIT License and comes with **ABSOLUTELY NO WARRA
 
 ---
 
-*Developed for the freshwater ecology community - making climate data accessible for aquatic research*
+*Developed for making climate data accessible for aquatic research*
