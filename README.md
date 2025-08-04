@@ -1,7 +1,6 @@
 # CHELSA Temperature Data Extraction for Freshwater Ecology
 
 [![R](https://img.shields.io/badge/R-%3E%3D4.0-blue.svg)](https://www.r-project.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
@@ -28,6 +27,9 @@ This R script downloads and processes **CHELSA V2 monthly temperature data** for
 ## Requirements
 
 ### R Packages
+
+- NOTE: load tidyverse and then raster packages to avoid namespace conflicts (e.g., "extract")
+
 ```r
 library(tidyverse)  # Data manipulation and visualization
 library(raster)     # Spatial data processing
