@@ -13,17 +13,21 @@ library(tidyverse)
 library(raster)
 
 # set working directory
-setwd("C:/Users/...") # add yours here
+# setwd("C:/Users/...") # add yours here
 
 # ==============================================================================
 # 1. DEFINE SAMPLING SITES
 # ==============================================================================
 
-# Your four sampling sites in Germany
+# Your four sampling sites in Germany (coordiates in UTM)
 sampling_sites <- data.frame(
-  SITE_ID = c("Auba", "Bieb", "KiO3", "KiW1"),
-  LON = c(9.428894, 9.305102, 9.100368, 8.965705),  # Longitude (E)
-  LAT = c(50.03749, 50.1618, 50.18689, 50.1316),    # Latitude (N)
+  stream = c("Aubach", "Bieber", "Kinzig O3", "Kinzig W1"),
+  site_code = c("Auba", "Bieb", "KiO3", "KiW1"),
+  site_name = c("oh. Wiesthal", "oh. Rossbach", "uh. Rothenbergen", "Bulau"),
+  UTM_E = c(9.42889356, 9.3051018, 9.10036763, 8.96570543), # Longitude
+  UTM_N = c(50.0374896, 50.1617954, 50.1868858, 50.1315991), # Latitude
+  Rechtswert = c(3530801.78, 3521876.92, 3507243.99, 3497623.98),
+  Hochwert = c(5544665.62, 5558448.64, 5561199.75, 5555045.85),
   stringsAsFactors = FALSE
 )
 
@@ -209,7 +213,7 @@ extract_temperature_for_sites <- function(raster_file, site_coordinates) {
     temp_raster <- raster(raster_file)
 
     # Extract temperature values for all sites
-    temp_values <- extract(temp_raster, site_coordinates[, c("LON", "LAT")])
+    temp_values <- extract(temp_raster, site_coordinates[, c("UTM_E", "UTM_N")])
 
     # Convert from Kelvin*10 to Celsius (CHELSA uses Kelvin * 10)
     temp_celsius <- (temp_values * 0.1) - 273.15
@@ -243,12 +247,14 @@ for (i in 1:length(downloaded_files)) {
   # Store results for each site
   for (j in 1:nrow(sampling_sites)) {
     result_row <- data.frame(
-      SITE_ID = sampling_sites$SITE_ID[j],
-      LON = sampling_sites$LON[j],
-      LAT = sampling_sites$LAT[j],
-      YEAR = date_info$year,
-      MONTH = date_info$month,
-      TEMPERATURE_C = temp_values[j],
+      stream = sampling_sites$stream[j],
+      site_code = sampling_sites$site_code[j],
+      site_name = sampling_sites$site_name[j],
+      UTM_E = sampling_sites$UTM_E[j],
+      UTM_N = sampling_sites$UTM_N[j],
+      year = date_info$year,
+      month = date_info$month,
+      temperature_C = temp_values[j],
       stringsAsFactors = FALSE
     )
     results <- rbind(results, result_row)
@@ -261,7 +267,7 @@ for (i in 1:length(downloaded_files)) {
 
 # Sort results by site, year, and month
 results <- results |>
-  arrange(SITE_ID, YEAR, MONTH)
+  arrange(site_code, year, month)
 
 # Create output filename with timestamp
 output_filename <- paste0("CHELSA_temperature_data_",
@@ -275,7 +281,7 @@ write_csv(results, output_filename)
 # ==============================================================================
 
 # Check for missing data
-missing_data <- sum(is.na(results$TEMPERATURE_C))
+missing_data <- sum(is.na(results$temperature_C))
 total_records <- nrow(results)
 missing_percentage <- (missing_data / total_records) * 100
 
@@ -284,70 +290,70 @@ cat("Missing temperature values:", missing_data, "\n")
 cat("Missing data percentage:", round(missing_percentage, 2), "%\n")
 
 # Display overall data summary
-print(summary(results$TEMPERATURE_C))
+print(summary(results$temperature_C))
 
 # Summary by site
 temp_summary_site <- results |>
-  group_by(SITE_ID) |>
+  group_by(site_code) |>
   summarise(
-    mean_temp = round(mean(TEMPERATURE_C, na.rm = TRUE), 2),
-    min_temp = round(min(TEMPERATURE_C, na.rm = TRUE), 2),
-    max_temp = round(max(TEMPERATURE_C, na.rm = TRUE), 2),
+    mean_temp = round(mean(temperature_C, na.rm = TRUE), 2),
+    min_temp = round(min(temperature_C, na.rm = TRUE), 2),
+    max_temp = round(max(temperature_C, na.rm = TRUE), 2),
     n_records = n(),
-    n_missing = sum(is.na(TEMPERATURE_C)),
-    years_covered = paste(range(YEAR, na.rm = TRUE), collapse = "-")
+    n_missing = sum(is.na(temperature_C)),
+    years_covered = paste(range(year, na.rm = TRUE), collapse = "-")
   ) |>
   print()
 
 # Summary by year
 year_summary <- results |>
-  group_by(YEAR) |>
+  group_by(year) |>
   summarise(
-    mean_temp = round(mean(TEMPERATURE_C, na.rm = TRUE), 2),
+    mean_temp = round(mean(temperature_C, na.rm = TRUE), 2),
     n_records = n(),
-    n_missing = sum(is.na(TEMPERATURE_C)),
-    n_sites = n_distinct(SITE_ID),
-    n_months = n_distinct(MONTH)
+    n_missing = sum(is.na(temperature_C)),
+    n_sites = n_distinct(site_code),
+    n_months = n_distinct(month)
   ) |>
   print()
 
 # Monthly patterns across all years
 monthly_summary <- results |>
-  group_by(MONTH) |>
+  group_by(month) |>
   summarise(
-    mean_temp = round(mean(TEMPERATURE_C, na.rm = TRUE), 2),
-    min_temp = round(min(TEMPERATURE_C, na.rm = TRUE), 2),
-    max_temp = round(max(TEMPERATURE_C, na.rm = TRUE), 2),
+    mean_temp = round(mean(temperature_C, na.rm = TRUE), 2),
+    min_temp = round(min(temperature_C, na.rm = TRUE), 2),
+    max_temp = round(max(temperature_C, na.rm = TRUE), 2),
     n_records = n()
   ) |>
   print()
 
 # ==============================================================================
-# 6. CREATE VISUALIZATION
+# 6. CREATE VISUALIZATIONS
 # ==============================================================================
 
 # Plot 1: Monthly temperature patterns by site
-p1 <- ggplot(results, aes(x = factor(MONTH), y = TEMPERATURE_C, fill = SITE_ID)) +
+p1 <- ggplot(results, aes(x = factor(month), y = temperature_C, fill = site_code)) +
     geom_boxplot() +
     labs(title = "Monthly Temperature Patterns by Site (2000-2019)",
          x = "Month", y = "Temperature (°C)",
-         fill = "Site ID") +
+         fill = "Site code") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 0))
 p1
 
 # Plot 2: Annual temperature trends
 annual_data <- results |>
-    group_by(YEAR, SITE_ID) |>
-    summarise(annual_temp = mean(TEMPERATURE_C, na.rm = TRUE), .groups = "drop")
+    group_by(year, site_code) |>
+    summarise(annual_temp = mean(temperature_C, na.rm = TRUE), .groups = "drop")
 
-p2 <- ggplot(annual_data, aes(x = YEAR, y = annual_temp, color = SITE_ID)) +
+p2 <- ggplot(annual_data, aes(x = year, y = annual_temp, color = site_code)) +
     geom_smooth(method = "lm", se = TRUE, alpha = 0.3) +
     # geom_line(linewidth = 1, linetype = 1) +
     geom_point(size = 2) +
     labs(title = "Annual Mean Temperature Trends (2000-2019)",
          x = "Year", y = "Annual Mean Temperature (°C)",
-         color = "Site ID") +
+         color = "Site code") +
     theme_minimal() +
     scale_x_continuous(breaks = seq(2000, 2019, 2))
 p2
